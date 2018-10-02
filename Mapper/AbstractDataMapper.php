@@ -91,7 +91,7 @@ abstract class AbstractDataMapper implements DataMapperInterface
      */
     public function getEntityClass()
     {
-        return $this->_entityClass;
+        return new $this->_entityClass;
     }
 
     /**

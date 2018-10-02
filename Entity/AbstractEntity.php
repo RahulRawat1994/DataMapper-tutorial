@@ -11,10 +11,12 @@ abstract class AbstractEntity
      * Class constructor
      * @param Array
      */
-    public function __construct(array $data)
+    public function __construct(array $data = null)
     {
-        foreach ($data as $name => $value) {
-            $this->$name = $value;
+        if (!is_null($data)) {
+            foreach ($data as $name => $value) {
+                $this->$name = $value;
+            }
         }
     }
 

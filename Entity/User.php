@@ -11,9 +11,7 @@ class User extends AbstractEntity
      */
     public function __construct(array $data = null)
     {
-        if (!is_null($data)) {
-            parent::__construct($data);
-        }
+        parent::__construct($data);
     }
     /**
      * Set the user's ID
