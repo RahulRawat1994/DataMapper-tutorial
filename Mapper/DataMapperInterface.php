@@ -1,9 +1,9 @@
 <?php
 
-namespace DMMapper;
+namespace Mapper;
 
-Interface DataMapperInterface {
-
+interface DataMapperInterface
+{
     public function findByID($id);
 
     public function findAll();
@@ -14,6 +14,5 @@ Interface DataMapperInterface {
 
     public function update($entity);
 
-    public function delete($entity);    
-
+    public function delete($entity);
 }

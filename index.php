@@ -1,11 +1,29 @@
 <?php
 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+use Database\PdoAdapter;
+use Mapper\UserMapper;
+use Entity\User;
+
+// Bootstrap all classes
+require_once 'Autoloader.php';
+Autoloader::register();
+
+// Database connection
 $conn_string='mysql:host=localhost;dbname=testdb;charset=utf8mb4';
 $username ='root';
-$password = '';
+$password = 'devWel189';
 
-//$db = new PdoAdapter($conn_string, $username, $password);
-$db = new MongoAdapter($conn_string, $username, $password);
-$user = new UserMapper($db);
+// PATH CONSTANT
+define('ENTITY_PATH', '\Entity\\');
 
-$user -> findAll();
+//Working
+$db = new PdoAdapter($conn_string, $username, $password);
+$db->openConnection();
+
+$userMapper = new UserMapper($db);
+
+$user=$userMapper->findAll();
+print_r($user[0]->lname);

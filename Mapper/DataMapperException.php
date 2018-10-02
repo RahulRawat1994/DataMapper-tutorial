@@ -1,5 +1,7 @@
 <?php
 
-namespace DMMapper;
+namespace Mapper;
 
-class DataMapperException extends Exception{}
+class DataMapperException extends \Exception
+{
+}

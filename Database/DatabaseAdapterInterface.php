@@ -1,15 +1,14 @@
 <?php
 
-namespace DMDatabase;
+namespace Database;
 
-Interface DatabaseAdapterInterface {
+interface DatabaseAdapterInterface
+{
+    public function select(string $table, array $whr = null, array $fields = null);
 
-    public function select($table, $whr = NULL, $fields = NULL);
+    public function insert(string $table, array $fields);
 
-    public function insert($table, $fields);
+    public function update(string $table, array $fields, array $whr);
 
-    public function update($table, $fields, $whr);
-
-    public function delete($table, $id);
-
+    public function delete(string $table, int $id);
 }

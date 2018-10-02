@@ -1,85 +1,129 @@
 <?php
 
-namespace DMDatabase;
+namespace Database;
 
-class PdoAdapter implements DatabaseAdapterInterface{
-
+class PdoAdapter implements DatabaseAdapterInterface
+{
     private $_conn;
     private $_connectionString;
     private $_user;
     private $_pass;
     private $_options;
-    private $_statement;
 
-    public function __construct(String $connectionString, String $user, String $pass, $options = NULL ){
-        
+    public function __construct(String $connectionString, String $user, String $pass, $options = null)
+    {
         $this->_connectionString = $connectionString;
         $this->_user    = $user;
         $this->_pass    = $pass;
         $this->_options = $options;
-
-        $this->_conn = $this->_openConnection();
-    
     }
 
     /**
      * Open the database connection
      */
-    private function _openConnection(){
+    public function openConnection()
+    {
         try {
-            $this->_conn = new PDO($this->_connectionString, $this->_user, $this->_pass, $this->_options);
+            $this->_conn = new \PDO($this->_connectionString, $this->_user, $this->_pass, $this->_options);
         } catch (\PDOException $e) {
-           
+            throw new Exception("Unable to connect with database <br/>".$e->getMessage(), $e->getCode());
         }
     }
 
-    public function select($table, $whr = NULL, $fields = NULL){
-        try{
-            $sql = "SELECT * FROM {$table}";
-            $this->_statement =  $this->_conn->prepare($sql);
-            $this->_statement ->execute();
-        } catch(\PDOException $e){
-
+    public function select(string $table, array $whr = null, array $fields = null)
+    {
+        $attributes='';
+        if (is_null($fields)) {
+            $attributes='*';
+        } else {
+            $attributes = implode(",", array_values($fields));
         }
-    }
 
-    public function fetch(){
-        try{
-            return $this->_statement->fetchAll(\PDO::FETCH_ASSOC);
-        }catch(\PDOException $e){
-
+        $conditions='';
+        if (!is_null($whr)) {
+            foreach ($whr as $key => $value) {
+                $conditions.="$key ='$value'";
+                if (next($fields)) {
+                    $conditions.=' and ';
+                }
+            }
         }
-    }
 
-    public function insert($table, $fields){
+        $sql = "SELECT $attributes FROM {$table}";
+        if ($conditions != '') {
+            $sql .= " WHERE $conditions";
+        }
+        $this->_conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
-        $stmt = $this->_conn->prepare("INSERT INTO {$table} (firstname, lastname, email) 
-        VALUES ('Hello','world','hello@world')");
-        $stmt = $this->_conn->prepare($sql);
-        $stmt->execute();
-
-    }
-
-    public function update($table, $fields, $whr){
-        try{
-            $sql = "UPDATE {$table} SET lastname='Doe' WHERE id=2";
-            $stmt = $this->_conn->prepare($sql);
+        try {
+            $stmt =  $this->_conn->prepare($sql);
             $stmt->execute();
-        } catch(\PDOException $e){
-
-        }
-    }
-
-    public function delete($table, $id){
-        try{
-            $sql = "DELETE FROM {$table} WHERE id={$id}";
-            $this->_conn->exec($sql);
-        } catch(\PDOException $e){
+            return $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        } catch (\PDOException $e) {
             throw new \PDOException($e->getMessage(), (int)$e->getCode());
         }
     }
 
-    public function __destruct(){
+    public function insert(string $table, array $fields)
+    {
+        $attributes = implode(",", array_keys($fields));
+        $values = "'".implode("','", array_values($fields)) ."'";
+        $sql ="INSERT INTO {$table} ($attributes) VALUES ($values)";
+        $this->_conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+
+        try {
+            $stmt = $this->_conn->prepare($sql);
+            $stmt->execute();
+            return $this->_conn->lastInsertId();
+        } catch (\PDOException $e) {
+            throw new \PDOException($e->getMessage(), (int)$e->getCode());
+        }
+    }
+
+    public function update(string $table, array $fields, array $whr)
+    {
+        $attributes='';
+        foreach ($fields as $field => $value) {
+            $attributes.="$field='$value'";
+            if (next($fields)) {
+                $attributes.=' , ';
+            }
+        }
+
+        $conditions='';
+        foreach ($whr as $key => $value) {
+            $conditions.="$key ='$value'";
+            if (next($fields)) {
+                $conditions.=' and ';
+            }
+        }
+
+        $sql = "UPDATE {$table} SET $attributes WHERE $conditions";
+        $this->_conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+
+        try {
+            $stmt = $this->_conn->prepare($sql);
+            return $stmt->execute();
+        } catch (\PDOException $e) {
+            throw new \PDOException($e->getMessage(), (int)$e->getCode());
+        }
+    }
+
+    public function delete(string $table, int $id)
+    {
+        $sql = "DELETE FROM {$table} WHERE id={$id}";
+        $this->_conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+
+        try {
+            $stmt = $this->_conn->prepare($sql);
+            return $stmt->execute();
+        } catch (\PDOException $e) {
+            throw new \PDOException($e->getMessage(), (int)$e->getCode());
+        }
+    }
+
+    public function __destruct()
+    {
         $this->_conn = null;
     }
 }

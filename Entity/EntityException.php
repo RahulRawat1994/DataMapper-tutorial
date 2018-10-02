@@ -1,5 +1,7 @@
 <?php
 
-namespace DMEntity;
+namespace Entity;
 
-class EntityException extends Exception{}
+class EntityException extends \Exception
+{
+}
