@@ -1,6 +1,6 @@
 <?php
 
-namespace Database;
+namespace App\Database;
 
 class PdoAdapter implements DatabaseAdapterInterface
 {
@@ -10,41 +10,41 @@ class PdoAdapter implements DatabaseAdapterInterface
     private $_pass;
     private $_options;
 
-    public function __construct(String $connectionString, String $user, String $pass, $options = null)
+    public function __construct(string $connectionString, string $user, string $pass, $options = null)
     {
         $this->_connectionString = $connectionString;
-        $this->_user    = $user;
-        $this->_pass    = $pass;
+        $this->_user = $user;
+        $this->_pass = $pass;
         $this->_options = $options;
     }
 
     /**
-     * Open the database connection
+     * Open the database connection.
      */
     public function openConnection()
     {
         try {
             $this->_conn = new \PDO($this->_connectionString, $this->_user, $this->_pass, $this->_options);
         } catch (\PDOException $e) {
-            throw new Exception("Unable to connect with database <br/>".$e->getMessage(), $e->getCode());
+            throw new Exception('Unable to connect with database <br/>'.$e->getMessage(), $e->getCode());
         }
     }
 
     public function select(string $table, array $whr = null, array $fields = null)
     {
-        $attributes='';
+        $attributes = '';
         if (is_null($fields)) {
-            $attributes='*';
+            $attributes = '*';
         } else {
-            $attributes = implode(",", array_values($fields));
+            $attributes = implode(',', array_values($fields));
         }
 
-        $conditions='';
+        $conditions = '';
         if (!is_null($whr)) {
             foreach ($whr as $key => $value) {
-                $conditions.="$key ='$value'";
+                $conditions .= "$key ='$value'";
                 if (next($fields)) {
-                    $conditions.=' and ';
+                    $conditions .= ' and ';
                 }
             }
         }
@@ -56,45 +56,47 @@ class PdoAdapter implements DatabaseAdapterInterface
         $this->_conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
         try {
-            $stmt =  $this->_conn->prepare($sql);
+            $stmt = $this->_conn->prepare($sql);
             $stmt->execute();
+
             return $stmt->fetchAll(\PDO::FETCH_ASSOC);
         } catch (\PDOException $e) {
-            throw new \PDOException($e->getMessage(), (int)$e->getCode());
+            throw new \PDOException($e->getMessage(), (int) $e->getCode());
         }
     }
 
     public function insert(string $table, array $fields)
     {
-        $attributes = implode(",", array_keys($fields));
-        $values = "'".implode("','", array_values($fields)) ."'";
-        $sql ="INSERT INTO {$table} ($attributes) VALUES ($values)";
+        $attributes = implode(',', array_keys($fields));
+        $values = "'".implode("','", array_values($fields))."'";
+        $sql = "INSERT INTO {$table} ($attributes) VALUES ($values)";
         $this->_conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 
         try {
             $stmt = $this->_conn->prepare($sql);
             $stmt->execute();
+
             return $this->_conn->lastInsertId();
         } catch (\PDOException $e) {
-            throw new \PDOException($e->getMessage(), (int)$e->getCode());
+            throw new \PDOException($e->getMessage(), (int) $e->getCode());
         }
     }
 
     public function update(string $table, array $fields, array $whr)
     {
-        $attributes='';
+        $attributes = '';
         foreach ($fields as $field => $value) {
-            $attributes.="$field='$value'";
+            $attributes .= "$field='$value'";
             if (next($fields)) {
-                $attributes.=' , ';
+                $attributes .= ' , ';
             }
         }
 
-        $conditions='';
+        $conditions = '';
         foreach ($whr as $key => $value) {
-            $conditions.="$key ='$value'";
+            $conditions .= "$key ='$value'";
             if (next($fields)) {
-                $conditions.=' and ';
+                $conditions .= ' and ';
             }
         }
 
@@ -103,9 +105,10 @@ class PdoAdapter implements DatabaseAdapterInterface
 
         try {
             $stmt = $this->_conn->prepare($sql);
+
             return $stmt->execute();
         } catch (\PDOException $e) {
-            throw new \PDOException($e->getMessage(), (int)$e->getCode());
+            throw new \PDOException($e->getMessage(), (int) $e->getCode());
         }
     }
 
@@ -116,9 +119,10 @@ class PdoAdapter implements DatabaseAdapterInterface
 
         try {
             $stmt = $this->_conn->prepare($sql);
+
             return $stmt->execute();
         } catch (\PDOException $e) {
-            throw new \PDOException($e->getMessage(), (int)$e->getCode());
+            throw new \PDOException($e->getMessage(), (int) $e->getCode());
         }
     }
 

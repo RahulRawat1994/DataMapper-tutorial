@@ -1,6 +1,6 @@
 <?php
 
-namespace Mapper;
+namespace App\Mapper;
 
 class DataMapperException extends \Exception
 {

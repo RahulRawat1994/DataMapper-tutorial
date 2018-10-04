@@ -1,20 +1,21 @@
 <?php
 
-namespace Entity;
+namespace App\Entity;
 
 class User extends AbstractEntity
 {
     protected $_allowedFields = array('id', 'fname', 'lname', 'email');
 
     /**
-     * constructor
+     * constructor.
      */
     public function __construct(array $data = null)
     {
         parent::__construct($data);
     }
+
     /**
-     * Set the user's ID
+     * Set the user's ID.
      */
     public function setId($id)
     {
@@ -25,7 +26,7 @@ class User extends AbstractEntity
     }
 
     /**
-     * Set the user's first name
+     * Set the user's first name.
      */
     public function setFname($fname)
     {
@@ -36,7 +37,7 @@ class User extends AbstractEntity
     }
 
     /**
-     * Set the user's last name
+     * Set the user's last name.
      */
     public function setLname($lname)
     {
@@ -47,7 +48,7 @@ class User extends AbstractEntity
     }
 
     /**
-     * Set the user's email address
+     * Set the user's email address.
      */
     public function setEmail($email)
     {

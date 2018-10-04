@@ -1,18 +1,18 @@
 <?php
 
-namespace Mapper;
+namespace App\Mapper;
 
-use Database\DatabaseAdapterInterface;
+use App\Database\DatabaseAdapterInterface;
 
 abstract class AbstractDataMapper implements DataMapperInterface
 {
     protected $_adapter;
-    protected $_collection=[];
+    protected $_collection = [];
     protected $_entityTable;
     protected $_entityClass;
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct(DatabaseAdapterInterface $adapter, array $entityOptions = array())
     {
@@ -28,31 +28,32 @@ abstract class AbstractDataMapper implements DataMapperInterface
     }
 
     /**
-     * Get the Database Adapter
+     * Get the Database Adapter.
+     *
      * @return _adapter
      */
-
     public function getAdapter()
     {
         return $this->_adapter;
     }
 
     /**
-     * Get the collection
+     * Get the collection.
+     *
      * @return _collection
      */
-
     public function getCollection()
     {
         return $this->_collection;
     }
 
     /**
-     * Set the entity table
+     * Set the entity table.
+     *
      * @param $entityTable -- Table name of entity
+     *
      * @throws DataMapperException
      */
-
     private function _setEntityTable($entityTable)
     {
         if (!(is_string($entityTable)) || empty($entityTable)) {
@@ -62,21 +63,22 @@ abstract class AbstractDataMapper implements DataMapperInterface
     }
 
     /**
-     * Get the entity table
+     * Get the entity table.
+     *
      * @return _entityTable
      */
-
     public function getEntityTable()
     {
         return $this->_entityTable;
     }
 
     /**
-     * Set the entity Class
+     * Set the entity Class.
+     *
      * @param $entityClass (Entity Class)
+     *
      * @throws DataMapperException
      */
-
     private function _setEntityClass($entityClass)
     {
         if (!class_exists(ENTITY_PATH.$entityClass)) {
@@ -86,16 +88,18 @@ abstract class AbstractDataMapper implements DataMapperInterface
     }
 
     /**
-     * Get the entity Class
+     * Get the entity Class.
+     *
      * @return _entityClass
      */
     public function getEntityClass()
     {
-        return new $this->_entityClass;
+        return new $this->_entityClass();
     }
 
     /**
-     * Find the entity by its ID
+     * Find the entity by its ID.
+     *
      * @return (NULL || _entityClass)
      */
     public function findById($id)
@@ -104,12 +108,14 @@ abstract class AbstractDataMapper implements DataMapperInterface
         if ($data = $this->_adapter->fetch()) {
             return new $this->_entityClass($data);
         }
+
         return null;
     }
 
     /**
-     * Find all the entities
-     * @return Array collection of record
+     * Find all the entities.
+     *
+     * @return array collection of record
      */
     public function findAll()
     {
@@ -117,28 +123,34 @@ abstract class AbstractDataMapper implements DataMapperInterface
         foreach ($data as $item) {
             $this->_collection[] = new $this->_entityClass($item);
         }
+
         return $this->_collection;
     }
 
     /**
-     * Find all the entities that match specific criteria
-     * @param Array array of criteria
-     * @return Array Collection of record
+     * Find all the entities that match specific criteria.
+     *
+     * @param array array of criteria
+     *
+     * @return array Collection of record
      */
-
     public function search($criteria)
     {
         $this->_adapter->select($this->_entityTable, $criteria);
         while ($data = $this->_adapter->fetch()) {
             $this->_collection[] = new $this->_entityClass($data);
         }
+
         return $this->_collection;
     }
 
     /**
-     * Insert a new row in the table corresponding to specific entity
-     * @param Object New Entity Object
+     * Insert a new row in the table corresponding to specific entity.
+     *
+     * @param object New Entity Object
+     *
      * @throws DataMapperException
+     *
      * @return
      */
     public function insert($entity)
@@ -151,9 +163,12 @@ abstract class AbstractDataMapper implements DataMapperInterface
     }
 
     /**
-     * Update an existing row in the table corresponding to specific entity
-     * @param Object Update Entity Object
+     * Update an existing row in the table corresponding to specific entity.
+     *
+     * @param object Update Entity Object
+     *
      * @throws DataMapperException
+     *
      * @return
      */
     public function update($entity)
@@ -164,20 +179,25 @@ abstract class AbstractDataMapper implements DataMapperInterface
             throw new DataMapperException('Id cannot be null');
         } else {
             $data = $entity->toArray();
-            return $this->_adapter->update($this->_entityTable, $data, ['id'=> $data['id']]);
+
+            return $this->_adapter->update($this->_entityTable, $data, ['id' => $data['id']]);
         }
     }
 
     /**
-     * Delete an existing row in the table corresponding to specific entity
-     * @param Object Delete Entity Object
+     * Delete an existing row in the table corresponding to specific entity.
+     *
+     * @param object Delete Entity Object
+     *
      * @throws DataMapperException
+     *
      * @return
      */
     public function delete($entity)
     {
         if ($entity instanceof $this->_entityClass) {
             $id = $entity->toArray()['id'];
+
             return $this->_adapter->delete($this->_entityTable, $id);
         } else {
             throw new DataMapperException('The specific entry is not allowed for this mapper');

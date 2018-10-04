@@ -1,22 +1,22 @@
 <?php
 
-namespace Mapper;
+namespace App\Mapper;
 
-use Database\DatabaseAdapterInterface;
+use App\Database\DatabaseAdapterInterface;
 
 class UserMapper extends AbstractDataMapper
 {
-    protected $_entityClass = "User";
-    protected $_entityTable = "users";
+    protected $_entityClass = 'User';
+    protected $_entityTable = 'users';
 
     /**
-     * Constructor
+     * Constructor.
      */
     public function __construct(DatabaseAdapterInterface $adapter)
     {
         parent::__construct($adapter, [
             'entityTable' => $this->_entityTable,
-            'entityClass' => $this->_entityClass
+            'entityClass' => $this->_entityClass,
         ]);
     }
 }

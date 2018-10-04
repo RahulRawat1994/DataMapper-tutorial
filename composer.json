@@ -1,0 +1,20 @@
+{
+    "name": "root/data-mapper",
+    "description": "Basic data mapper for learning purpose",
+    "authors": [
+        {
+            "name": "Rahul Rawat",
+            "email": "rahul.rawat@walkwel.in"
+        }
+    ],
+    "autoload": {
+        "psr-4": {"App\\": ""}
+    },
+    "minimum-stability": "RC",
+    "require": {},
+    "config": {
+        "platform": {
+            "php": "7.0"
+        }
+    }
+}

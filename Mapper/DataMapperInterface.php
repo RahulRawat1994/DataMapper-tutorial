@@ -1,6 +1,6 @@
 <?php
 
-namespace Mapper;
+namespace App\Mapper;
 
 interface DataMapperInterface
 {
